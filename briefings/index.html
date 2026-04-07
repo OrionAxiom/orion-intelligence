@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORION Briefings | Secure Access</title>
+    <style>
+        :root {
+            --primary: #1A237E;
+            --accent: #FFD600;
+            --bg: #0A0E27;
+            --card: #12163A;
+            --text: #FFFFFF;
+            --text-muted: #8B92B4;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-box {
+            background: var(--card);
+            padding: 3rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,214,0,0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .logo { font-size: 3rem; margin-bottom: 0.5rem; }
+        h1 { color: var(--accent); font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .subtitle { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 2rem; }
+        input[type="password"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        input[type="password"]:focus { outline: none; border-color: var(--accent); }
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), #283593);
+            color: var(--accent);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover { box-shadow: 0 4px 20px rgba(255,214,0,0.3); }
+        #error-msg { color: #FF5252; margin-top: 1rem; font-size: 0.875rem; }
+        #content { display: none; text-align: left; max-width: 800px; width: 90%; }
+        .briefing-list { margin-top: 2rem; }
+        .briefing-item {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255,214,0,0.1);
+        }
+        .briefing-date { color: var(--accent); font-size: 0.875rem; margin-bottom: 0.5rem; }
+        .back-btn {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--card);
+            border: 1px solid rgba(255,214,0,0.2);
+            border-radius: 8px;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="login-screen" class="login-box">
+        <div class="logo">🌌</div>
+        <h1>ORION Briefings</h1>
+        <p class="subtitle">致一管家 CatalystKeep — Daily Intelligence Briefings</p>
+        <input type="password" id="password" placeholder="輸入密碼">
+        <button onclick="login()">進入</button>
+        <p id="error-msg"></p>
+    </div>
+
+    <div id="content">
+        <button class="back-btn" onclick="logout()">登出</button>
+        <h1 style="color: var(--accent); margin-bottom: 1rem;">🌌 Daily Briefings</h1>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">每日情報簡報存檔 — 僅限授權訪問</p>
+        
+        <div class="briefing-list" id="briefing-list">
+            <!-- Briefings will be loaded here -->
+            <div class="briefing-item">
+                <div class="briefing-date">等待首次簡報生成...</div>
+                <p>首次 MORNING_SCAN 將於明日 09:00 執行。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CORRECT_PASSWORD = 'axiom2026';
+        
+        function login() {
+            if (document.getElementById('password').value === CORRECT_PASSWORD) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                loadBriefings();
+            } else {
+                document.getElementById('error-msg').textContent = '密碼錯誤，請重試。';
+            }
+        }
+        
+        function logout() {
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('content').style.display = 'none';
+            document.getElementById('password').value = '';
+        }
+        
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') login();
+        });
+        
+        function loadBriefings() {
+            // This would load from briefing files
+            // For now, showing placeholder
+        }
+    </script>
+</body>
+</html>

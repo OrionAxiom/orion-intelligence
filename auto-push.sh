@@ -1,29 +1,24 @@
 #!/bin/bash
-# ORION Auto-Push Script
-# 每個 cron job 完成後自動執行
+# ORION Auto-Push Script — for orion-intelligence (PUBLIC)
+# Push non-sensitive data: dashboard/, public/, briefings/, backup/raw/, backup/wiki/
 
 REPO_DIR="/tmp/orion-intelligence"
-COMMIT_MSG="$1"
-
-if [ -z "$COMMIT_MSG" ]; then
-    COMMIT_MSG="[ORION] Auto-update $(date '+%Y-%m-%d %H:%M')"
-fi
+COMMIT_MSG="${1:-[ORION] Auto-update $(date '+%Y-%m-%d %H:%M')}"
 
 cd "$REPO_DIR" || exit 1
 
-# Check if there are changes
+# Ensure sensitive folders are NOT in this repo (they go to orion-backup)
+if [ -d "$REPO_DIR/leads" ] || [ -d "$REPO_DIR/logs" ] || [ -d "$REPO_DIR/audit-reports" ]; then
+    echo "⚠️  Warning: Sensitive folders detected. Move them to orion-backup."
+fi
+
 if git diff --quiet && git diff --cached --quiet; then
     echo "No changes to commit."
     exit 0
 fi
 
-# Add all changes
 git add -A
-
-# Commit with message
 git commit -m "$COMMIT_MSG"
+git push origin main
 
-# Push to GitHub
-git push origin master
-
-echo "✅ Auto-push completed: $COMMIT_MSG"
+echo "✅ Public push completed: $COMMIT_MSG"
