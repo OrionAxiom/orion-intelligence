@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>致一管家 CatalystKeep | ORION Intelligence</title>
+    <style>
+        :root {
+            --primary: #1A237E;
+            --primary-light: #283593;
+            --accent: #FFD600;
+            --bg: #0A0E27;
+            --bg-light: #12163A;
+            --text: #FFFFFF;
+            --text-muted: #8B92B4;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        /* Navigation */
+        nav {
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 214, 0, 0.2);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .logo-icon {
+            font-size: 1.5rem;
+        }
+        
+        .logo-text {
+            background: linear-gradient(135deg, var(--text), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(26,35,126,0.3) 0%, transparent 100%);
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 214, 0, 0.1);
+            border: 1px solid rgba(255, 214, 0, 0.3);
+            border-radius: 100px;
+            font-size: 0.875rem;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .hero h1 span {
+            color: var(--accent);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--accent);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 214, 0, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(255, 214, 0, 0.2);
+        }
+        
+        /* Weekly Intelligence Section */
+        .intelligence {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-header p {
+            color: var(--text-muted);
+        }
+        
+        .intel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .intel-card {
+            background: var(--bg-light);
+            border: 1px solid rgba(255, 214, 0, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .intel-card:hover {
+            border-color: rgba(255, 214, 0, 0.3);
+            transform: translateY(-4px);
+        }
+        
+        .intel-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .intel-category {
+            padding: 0.25rem 0.75rem;
+            background: rgba(26, 35, 126, 0.5);
+            border-radius: 100px;
+            font-size: 0.75rem;
+            color: var(--accent);
+        }
+        
+        .intel-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .intel-card h3 {
+            font-size: 1.125rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+        
+        .intel-card p {
+            color: var(--text-muted);
+            font-size: 0.9375rem;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 4rem 2rem;
+            background: linear-gradient(180deg, transparent 0%, rgba(26,35,126,0.2) 100%);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature h3 {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        
+        .cta-box {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 3rem;
+            background: var(--bg-light);
+            border: 1px solid rgba(255, 214, 0, 0.2);
+            border-radius: 16px;
+        }
+        
+        .cta-box h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-box p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        
+        .price-note {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .payment-method {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 214, 0, 0.1);
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .intel-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">🌌</span>
+                <span class="logo-text">致一管家 CatalystKeep</span>
+            </div>
+            <div class="nav-links">
+                <a href="#intelligence">每週情報</a>
+                <a href="#features">服務</a>
+                <a href="#pricing">訂閱</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">🌌 ORION Intelligence System</div>
+        <h1>香港 AI 商業情報<br><span>每週直送</span></h1>
+        
+        <p class="hero-subtitle">
+            致一管家 CatalystKeep 為你監察全球 AI 趨勢同香港商業環境，
+            助你搶先掌握商機。
+        </p>
+        
+        <a href="#pricing" class="cta-button">訂閱每週情報</a>
+    </section>
+    
+    <!-- Weekly Intelligence Preview -->
+    <section class="intelligence" id="intelligence">
+        <div class="section-header">
+            <h2>📊 本週精選情報</h2>
+            <p>ORION 每週掃描數百個來源，為你篩選最重要的商業情報</p>
+        </div>
+        
+        <div class="intel-grid">
+            <!-- Sample Intelligence Cards -->
+            <div class="intel-card">
+                <div class="intel-card-header">
+                    <span class="intel-category">AI 工具</span>
+                    <span class="intel-date">2026年4月第1週</span>
+                </div>
+                <h3>Cursor 3 發布並行 Agents 功能</h3>
+                <p>Cursor 3 推出全新並行 AI Agents 架構，可同時執行多個任務，直接挑戰 Claude Code 市場領導地位。</p>
+            </div>
+            
+            <div class="intel-card">
+                <div class="intel-card-header">
+                    <span class="intel-category">開源模型</span>
+                    <span class="intel-date">2026年4月第1週</span>
+                </div>
+                <h3>Google Gemma 4 開源發布</h3>
+                <p>Apache 2.0 授權，支援 140+ 語言，E4B 版本可在筆電本地運行，零 API 成本部署 AI。</p>
+            </div>
+            
+            <div class="intel-card">
+                <div class="intel-card-header">
+                    <span class="intel-category">香港市場</span>
+                    <span class="intel-date">2026年4月第1週</span>
+                </div>
+                <h3>中環、尖沙咀新開餐廳潮</h3>
+                <p>2026年4月香港新開超過 15 間特色餐廳，地中海、泰國、韓國、瑞士菜齊集，反映餐飲業復甦勢頭。</p>
+            </div>
+            
+            <div class="intel-card">
+                <div class="intel-card-header">
+                    <span class="intel-category">行業趨勢</span>
+                    <span class="intel-date">2026年4月第1週</span>
+                </div>
+                <h3>Claude Code 6 個月達 $1B 收入</h3>
+                <p>Anthropic 的 Claude Code 創 AI 編碼工具最快紀錄，驗證「功能完整性優於 UI 華麗」策略成功。</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2>⚡ ORION 為你提供</h2>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">🔍</div>
+                <h3>每日情報掃描</h3>
+                <p>自動監測 AI 工具、香港商業環境、競爭對手動態</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🎯</div>
+                <h3>潛在客戶識別</h3>
+                <p>智能評分系統，發掘高價值香港商戶 Lead</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">📈</div>
+                <h3>商戶數碼審計</h3>
+                <p>5 維度健康評分，識別業務痛點同改善機會</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🧠</div>
+                <h3>知識庫累積</h3>
+                <p>RAW → WIKI 三層架構，情報會持續增值</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Pricing CTA -->
+    <section class="cta-section" id="pricing">
+        <div class="cta-box">
+            <h2>訂閱 ORION 每週情報</h2>
+            
+            <p>搶先掌握 AI 趨勢同香港商業機遇，助你做出更明智嘅商業決策。</p>
+            
+            <div class="price">HK$199</div>
+            <div class="price-note">每月 / 每週情報直送</div>
+            
+            <a href="#" class="cta-button" onclick="alert('付費功能即將上線！請稍候。'); return false;">立即訂閱</a>
+            
+            <div class="payment-methods">
+                <span class="payment-method">💳 Stripe</span>
+                <span class="payment-method">📱 PayMe</span>
+                <span class="payment-method">🏦 轉數快 FPS</span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <p>
+            © 2026 致一科技 Fulltech Consultant Company Limited | 
+            <a href="https://github.com/OrionAxiom/orion-intelligence">GitHub</a>
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.75rem;">
+            Powered by 🌌 ORION Intelligence System
+        </p>
+    </footer>
+</body>
+</html>

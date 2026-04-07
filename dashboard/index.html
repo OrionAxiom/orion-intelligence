@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORION Dashboard | 致一管家 CatalystKeep</title>
+    <style>
+        :root {
+            --primary: #1A237E;
+            --accent: #FFD600;
+            --bg: #0A0E27;
+            --card: #12163A;
+            --text: #FFFFFF;
+            --text-muted: #8B92B4;
+            --success: #00C853;
+            --warning: #FFAB00;
+            --danger: #FF5252;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        /* Login Screen */
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .login-box {
+            background: var(--card);
+            padding: 3rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,214,0,0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        h1 {
+            color: var(--accent);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+        }
+        
+        input[type="password"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), #283593);
+            color: var(--accent);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: linear-gradient(135deg, #283593, var(--primary));
+            box-shadow: 0 4px 20px rgba(255,214,0,0.3);
+        }
+        
+        #error-msg {
+            color: var(--danger);
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+        
+        /* Dashboard */
+        #dashboard {
+            display: none;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,214,0,0.2);
+        }
+        
+        .header-left h1 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .datetime {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        .logout-btn {
+            width: auto;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.875rem;
+        }
+        
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,214,0,0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-ok { background: var(--success); }
+        .status-warn { background: var(--warning); }
+        .status-error { background: var(--danger); }
+        
+        /* Cron Jobs Status */
+        .cron-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .cron-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: rgba(26,35,126,0.3);
+            border-radius: 8px;
+        }
+        
+        .cron-name {
+            font-size: 0.875rem;
+        }
+        
+        .cron-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        /* Daily Briefing Section */
+        .briefing-card {
+            grid-column: 1 / -1;
+        }
+        
+        .briefing-content {
+            background: rgba(26,35,126,0.2);
+            border-radius: 8px;
+            padding: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .priority-high { color: var(--danger); }
+        .priority-med { color: var(--warning); }
+        .priority-low { color: var(--success); }
+        
+        /* Lead Pipeline */
+        .lead-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .lead-stat {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(26,35,126,0.2);
+            border-radius: 8px;
+        }
+        
+        .lead-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .lead-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        /* Chart Placeholder */
+        .chart-container {
+            height: 200px;
+            background: rgba(26,35,126,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .lead-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen">
+        <div class="login-box">
+            <div class="logo">🌌</div>
+            <h1>ORION Dashboard</h1>
+            <p class="subtitle">致一管家 CatalystKeep — Intelligence System</p>
+            <input type="password" id="password" placeholder="輸入密碼">
+            <button onclick="login()">進入系統</button>
+            <p id="error-msg"></p>
+        </div>
+    </div>
+    
+    <!-- Dashboard -->
+    <div id="dashboard">
+        <header>
+            <div class="header-left">
+                <h1>🌌 ORION Dashboard</h1>
+                <p class="datetime" id="datetime"></p>
+            </div>
+            <button class="logout-btn" onclick="logout()">登出</button>
+        </header>
+        
+        <!-- Daily Briefing -->
+        <div class="grid">
+            <div class="card briefing-card">
+                <div class="card-header">
+                    <span class="card-title">📊 今日 Daily Briefing</span>
+                    <span class="status-indicator status-ok"></span>
+                </div>
+                <div class="briefing-content" id="briefing">
+                    <p>⏳ 等待首次 MORNING_SCAN...</p>
+                    <p style="margin-top: 1rem; color: var(--text-muted);">
+                        下次更新：09:00 HKT
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div class="grid">
+            <!-- Cron Jobs Status -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">⚙️ Cron Jobs 狀態</span>
+                    <span class="status-indicator status-ok"></span>
+                </div>
+                <div class="cron-list">
+                    <div class="cron-item">
+                        <span class="cron-name">MORNING_SCAN</span>
+                        <span class="cron-time">09:00</span>
+                    </div>
+                    <div class="cron-item">
+                        <span class="cron-name">KNOWLEDGE_COMPILE</span>
+                        <span class="cron-time">09:30</span>
+                    </div>
+                    <div class="cron-item">
+                        <span class="cron-name">DAILY_BRIEFING</span>
+                        <span class="cron-time">10:00</span>
+                    </div>
+                    <div class="cron-item">
+                        <span class="cron-name">LEAD_HUNT</span>
+                        <span class="cron-time">14:00</span>
+                    </div>
+                    <div class="cron-item">
+                        <span class="cron-name">EVENING_REVIEW</span>
+                        <span class="cron-time">21:00</span>
+                    </div>
+                    <div class="cron-item">
+                        <span class="cron-name">WEEKLY_LINT</span>
+                        <span class="cron-time">週一 10:00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lead Pipeline -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🎯 Lead Pipeline</span>
+                    <span class="card-value" id="lead-total">0</span>
+                </div>
+                <div class="lead-stats">
+                    <div class="lead-stat">
+                        <div class="lead-stat-value" id="new-leads">0</div>
+                        <div class="lead-stat-label">今日新 Lead</div>
+                    </div>
+                    <div class="lead-stat">
+                        <div class="lead-stat-value" id="pending-outreach">0</div>
+                        <div class="lead-stat-label">待審批 Outreach</div>
+                    </div>
+                    <div class="lead-stat">
+                        <div class="lead-stat-value" id="high-score">0</div>
+                        <div class="lead-stat-label">≥60 分 Lead</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Knowledge Base Stats -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">📚 Knowledge Base</span>
+                    <span class="card-value" id="wiki-count">0</span>
+                </div>
+                <div class="cron-list">
+                    <div class="cron-item">
+                        <span class="cron-name">RAW Entries</span>
+                        <span id="raw-count">0</span>
+                    </div>
+                    <div class="cron-item">
+                        <span class="cron-name">WIKI Pages</span>
+                        <span id="wiki-pages">0</span>
+                    </div>
+                    <div class="cron-item">
+                        <span class="cron-name">最新更新</span>
+                        <span id="last-update">—</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Self Assessment Trend -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">📈 每日自評趨勢</span>
+                    <span class="card-value" id="avg-score">—</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="scoreChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Password protection
+        const CORRECT_PASSWORD = 'axiom2026'; // Change this to your preferred password
+        
+        function login() {
+            const input = document.getElementById('password').value;
+            if (input === CORRECT_PASSWORD) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                initDashboard();
+            } else {
+                document.getElementById('error-msg').textContent = '密碼錯誤，請重試。';
+            }
+        }
+        
+        function logout() {
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('password').value = '';
+            document.getElementById('error-msg').textContent = '';
+        }
+        
+        // Allow Enter key to submit
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
+        
+        // Dashboard initialization
+        function initDashboard() {
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // Load data from localStorage (simulated - will be replaced with actual data)
+            loadDashboardData();
+        }
+        
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric', 
+                weekday: 'long',
+                hour: '2-digit', 
+                minute: '2-digit',
+                timeZone: 'Asia/Hong_Kong'
+            };
+            document.getElementById('datetime').textContent = 
+                now.toLocaleDateString('zh-Hant', options) + ' HKT';
+        }
+        
+        function loadDashboardData() {
+            // This will be populated by actual ORION data
+            // For now, showing placeholder structure
+            
+            // TODO: Fetch from GitHub API or local files
+            // TODO: Parse briefing files
+            // TODO: Parse log files for scores
+        }
+        
+        // Check for existing session
+        if (sessionStorage.getItem('orion_authenticated') === 'true') {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            initDashboard();
+        }
+    </script>
+</body>
+</html>
