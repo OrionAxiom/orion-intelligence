@@ -99,7 +99,6 @@
         <p style="color: var(--text-muted); margin-bottom: 2rem;">每日情報簡報存檔 — 僅限授權訪問</p>
         
         <div class="briefing-list" id="briefing-list">
-            <!-- Briefings will be loaded here -->
             <div class="briefing-item">
                 <div class="briefing-date">等待首次簡報生成...</div>
                 <p>首次 MORNING_SCAN 將於明日 09:00 執行。</p>
@@ -108,20 +107,30 @@
     </div>
 
     <script>
-        const CORRECT_PASSWORD = 'axiom2026';
+        // SHA256 hash of password (client-side only)
+        const PASSWORD_HASH = 'ba7564b9c8950db69ad04479e64d12ad62919739aabd02b93da70c57ad8d7d0d';
         
-        function login() {
-            if (document.getElementById('password').value === CORRECT_PASSWORD) {
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        
+        async function login() {
+            const input = document.getElementById('password').value;
+            const inputHash = await sha256(input);
+            
+            if (inputHash === PASSWORD_HASH) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
-                loadBriefings();
             } else {
                 document.getElementById('error-msg').textContent = '密碼錯誤，請重試。';
             }
         }
         
         function logout() {
-            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('content').style.display = 'none';
             document.getElementById('password').value = '';
         }
@@ -129,11 +138,6 @@
         document.getElementById('password').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') login();
         });
-        
-        function loadBriefings() {
-            // This would load from briefing files
-            // For now, showing placeholder
-        }
     </script>
 </body>
 </html>

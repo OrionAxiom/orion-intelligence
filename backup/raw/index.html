@@ -105,7 +105,6 @@
         <p style="color: var(--text-muted); margin-bottom: 2rem;">每日情報掃描原始數據 — 僅限授權訪問</p>
         
         <div class="raw-list" id="raw-list">
-            <!-- RAW entries will be loaded here -->
             <div class="raw-item">
                 <span class="raw-date">等待首次掃描...</span>
                 <span class="priority-low">🟢</span>
@@ -114,20 +113,30 @@
     </div>
 
     <script>
-        const CORRECT_PASSWORD = 'axiom2026';
+        // SHA256 hash of password (client-side only)
+        const PASSWORD_HASH = 'ba7564b9c8950db69ad04479e64d12ad62919739aabd02b93da70c57ad8d7d0d';
         
-        function login() {
-            if (document.getElementById('password').value === CORRECT_PASSWORD) {
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        
+        async function login() {
+            const input = document.getElementById('password').value;
+            const inputHash = await sha256(input);
+            
+            if (inputHash === PASSWORD_HASH) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
-                loadRawEntries();
             } else {
                 document.getElementById('error-msg').textContent = '密碼錯誤，請重試。';
             }
         }
         
         function logout() {
-            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('content').style.display = 'none';
             document.getElementById('password').value = '';
         }
@@ -135,11 +144,6 @@
         document.getElementById('password').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') login();
         });
-        
-        function loadRawEntries() {
-            // This would load from raw files
-            // For now, showing placeholder
-        }
     </script>
 </body>
 </html>
