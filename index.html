@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌌 ORION Intelligence Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #1A237E;
+            --accent: #FFD600;
+            --white: #FFFFFF;
+            --dark: #0D1421;
+            --gray: #8B92A8;
+            --success: #00C853;
+            --warning: #FF9100;
+            --danger: #FF1744;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--dark);
+            color: var(--white);
+            min-height: 100vh;
+        }
+        
+        /* Login Screen */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        #login-screen h1 { font-size: 3rem; margin-bottom: 2rem; }
+        #login-screen input {
+            padding: 1rem 2rem; font-size: 1.2rem; font-family: inherit;
+            border: 2px solid var(--accent); background: rgba(255,255,255,0.1);
+            color: var(--white); border-radius: 8px; width: 300px;
+            text-align: center;
+        }
+        #login-screen button {
+            margin-top: 1rem; padding: 1rem 3rem;
+            background: var(--accent); color: var(--primary);
+            border: none; border-radius: 8px; font-family: inherit;
+            font-weight: 700; cursor: pointer; font-size: 1rem;
+        }
+        #login-screen button:hover { opacity: 0.9; }
+        #login-error { color: var(--danger); margin-top: 1rem; display: none; }
+        
+        /* Main Dashboard */
+        #dashboard { display: none; }
+        .nav {
+            background: var(--primary); padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .nav-brand { font-size: 1.5rem; font-weight: 700; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a {
+            color: var(--white); text-decoration: none; font-weight: 600;
+            padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.3s;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            background: var(--accent); color: var(--primary);
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        
+        /* Hero Stats */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, #283593 100%);
+            border-radius: 16px; padding: 2rem; margin-bottom: 2rem;
+        }
+        .hero-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 2rem;
+        }
+        .hero-title { font-size: 2rem; }
+        .hero-datetime { color: var(--accent); font-size: 1.2rem; }
+        
+        .cron-lights {
+            display: flex; gap: 1rem; margin-bottom: 2rem;
+        }
+        .cron-light {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: var(--gray); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; font-size: 0.7rem;
+            transition: all 0.3s;
+        }
+        .cron-light.active { background: var(--success); box-shadow: 0 0 20px var(--success); }
+        .cron-light.warning { background: var(--warning); }
+        .cron-light.error { background: var(--danger); }
+        
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.05); padding: 1.5rem;
+            border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .stat-card h3 { color: var(--gray); font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .stat-card .value { font-size: 2.5rem; font-weight: 700; color: var(--accent); }
+        
+        /* Sections */
+        .section {
+            background: rgba(26,35,126,0.2); border-radius: 16px;
+            padding: 2rem; margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .section h2 {
+            color: var(--accent); margin-bottom: 1.5rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        
+        /* Pilot Tracker */
+        .pilots-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;
+        }
+        .pilot-card {
+            background: rgba(255,255,255,0.05); padding: 1.5rem;
+            border-radius: 12px;
+        }
+        .pilot-card h4 { margin-bottom: 1rem; }
+        .progress-bar {
+            height: 8px; background: rgba(255,255,255,0.1);
+            border-radius: 4px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; background: var(--accent);
+            transition: width 0.5s ease;
+        }
+        
+        /* Briefing */
+        .briefing-content {
+            background: rgba(0,0,0,0.3); padding: 1.5rem;
+            border-radius: 8px; white-space: pre-wrap;
+            font-size: 0.95rem; line-height: 1.6;
+        }
+        .priority-high { color: var(--danger); }
+        .priority-med { color: var(--warning); }
+        .priority-low { color: var(--success); }
+        
+        /* Pipeline Kanban */
+        .kanban {
+            display: grid; grid-template-columns: repeat(6, 1fr);
+            gap: 1rem; overflow-x: auto;
+        }
+        .kanban-col {
+            background: rgba(255,255,255,0.03); border-radius: 8px;
+            padding: 1rem; min-width: 180px;
+        }
+        .kanban-col h4 {
+            color: var(--accent); margin-bottom: 1rem;
+            text-align: center; font-size: 0.9rem;
+        }
+        .kanban-card {
+            background: rgba(255,255,255,0.05); padding: 1rem;
+            border-radius: 6px; margin-bottom: 0.5rem;
+            font-size: 0.85rem; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .kanban-card:hover { background: rgba(255,255,255,0.1); }
+        .kanban-card.type-a { border-left: 3px solid var(--accent); }
+        .kanban-card.type-b { border-left: 3px solid var(--success); }
+        .kanban-card.type-c { border-left: 3px solid var(--gray); }
+        
+        /* Queue Tabs */
+        .tabs {
+            display: flex; gap: 1rem; margin-bottom: 1rem;
+        }
+        .tab {
+            padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.05);
+            border-radius: 6px; cursor: pointer; transition: all 0.2s;
+        }
+        .tab.active { background: var(--accent); color: var(--primary); }
+        .tab:hover:not(.active) { background: rgba(255,255,255,0.1); }
+        
+        /* Hidden Needs */
+        .needs-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        .need-tag {
+            background: rgba(255,214,0,0.1); border: 1px solid var(--accent);
+            padding: 0.75rem 1rem; border-radius: 20px;
+            text-align: center; font-size: 0.9rem;
+        }
+        
+        /* Chart */
+        .chart-container {
+            background: rgba(255,255,255,0.03); padding: 1.5rem;
+            border-radius: 12px; height: 300px;
+        }
+        
+        /* Deadline Alert */
+        .deadline-alert {
+            background: linear-gradient(90deg, var(--danger) 0%, #FF6B6B 100%);
+            padding: 1rem 2rem; border-radius: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 2rem;
+        }
+        .deadline-alert h3 { font-size: 1.2rem; }
+        .countdown { font-size: 1.5rem; font-weight: 700; }
+        
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .kanban { grid-template-columns: repeat(3, 1fr); }
+            .pilots-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen">
+        <h1>🌌 ORION</h1>
+        <input type="password" id="password" placeholder="輸入密碼" onkeypress="if(event.key==='Enter')checkPassword()">
+        <button onclick="checkPassword()">進入系統</button>
+        <div id="login-error">密碼錯誤</div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard">
+        <nav class="nav">
+            <div class="nav-brand">🌌 ORION Intelligence</div>
+            <div class="nav-links">
+                <a href="#briefing" class="active">BRIEFING</a>
+                <a href="#pipeline">PIPELINE</a>
+                <a href="#pilots">PILOTS</a>
+                <a href="#wiki">WIKI</a>
+                <a href="#status">STATUS</a>
+            </div>
+        </nav>
+
+        <div class="container">
+            <!-- Deadline Alert -->
+            <div class="deadline-alert">
+                <h3>⚠️ EMF 資助申請截止</h3>
+                <div class="countdown" id="emf-countdown">計算中...</div>
+            </div>
+
+            <!-- Hero Stats -->
+            <div class="hero">
+                <div class="hero-header">
+                    <h2 class="hero-title">ORION Command Center</h2>
+                    <div class="hero-datetime" id="datetime">--</div>
+                </div>
+                <div class="cron-lights">
+                    <div class="cron-light active" title="Morning Scan">🌅<br>06:00</div>
+                    <div class="cron-light active" title="Knowledge Compile">📚<br>09:00</div>
+                    <div class="cron-light active" title="Lead Hunt">🎯<br>10:00</div>
+                    <div class="cron-light" title="Briefing">📰<br>11:00</div>
+                    <div class="cron-light" title="Auto-Push">⬆️<br>14:00</div>
+                    <div class="cron-light" title="Evening Review">🌙<br>21:00</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>RAW Entries</h3>
+                        <div class="value" id="stat-raw">12</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>WIKI Pages</h3>
+                        <div class="value" id="stat-wiki">5</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Leads</h3>
+                        <div class="value" id="stat-leads">19</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pipeline Active</h3>
+                        <div class="value" id="stat-pipeline">10</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>48hr Follow-up</h3>
+                        <div class="value" id="stat-48hr">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pilot Tracker -->
+            <div class="section" id="pilots">
+                <h2>🚀 Pilot Tracker</h2>
+                <div class="pilots-grid">
+                    <div class="pilot-card">
+                        <h4>Pilot 1: TYPE A - The Orient</h4>
+                        <div style="margin-bottom:0.5rem">Score: 82 | Stage: S1</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 20%"></div>
+                        </div>
+                        <div style="margin-top:0.5rem; color:var(--gray); font-size:0.85rem">Next: Outreach draft</div>
+                    </div>
+                    <div class="pilot-card">
+                        <h4>Pilot 2: TYPE B - Becton Dickinson</h4>
+                        <div style="margin-bottom:0.5rem">Score: 70 | Stage: New</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 10%"></div>
+                        </div>
+                        <div style="margin-top:0.5rem; color:var(--gray); font-size:0.85rem">Next: Research DM</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Briefing -->
+            <div class="section" id="briefing">
+                <h2>📰 Daily Briefing</h2>
+                <div class="briefing-content" id="briefing-content">
+<span class="priority-high">🔴 必讀</span>
+• 香港34%僱主計劃增聘，大量Head of BD職位 = ORION機會
+• ArXiv 220+論文：Agentic AI持續火熱
+• 新斗記米芝蓮結業：餐飲業困境 = 後台自動化需求
+
+<span class="priority-med">🟡 留意</span>
+• HN熱門：Stagehand瀏覽器自動化
+• Kimi k1.5、Gemini 2.5推理模型興起
+• MCP (Model Context Protocol)開始流行
+
+<span class="priority-low">🟢 擴展</span>
+• Browser automation工具測試
+• 本地AI部署選項
+• 語音技術成熟（500ms latency）
+                </div>
+            </div>
+
+            <!-- Pipeline -->
+            <div class="section" id="pipeline">
+                <h2>📊 Pipeline</h2>
+                <div style="margin-bottom:1rem">
+                    <span style="margin-right:2rem">🔵 Tab: <strong>A</strong> / B / C</span>
+                    <span style="color:var(--accent)">■</span> TYPE A 
+                    <span style="color:var(--success); margin-left:1rem">■</span> TYPE B
+                    <span style="color:var(--gray); margin-left:1rem">■</span> TYPE C
+                </div>
+                <div class="kanban">
+                    <div class="kanban-col">
+                        <h4>NEW</h4>
+                        <div class="kanban-card type-a">The Orient<br><small>Score: 82</small></div>
+                        <div class="kanban-card type-a">dragon-i<br><small>Score: 80</small></div>
+                        <div class="kanban-card type-b">Becton Dickinson<br><small>Score: 70</small></div>
+                    </div>
+                    <div class="kanban-col">
+                        <h4>S1</h4>
+                        <div class="kanban-card type-a">Terrace Boulud<br><small>Score: 78</small></div>
+                    </div>
+                    <div class="kanban-col">
+                        <h4>FOLLOWING</h4>
+                    </div>
+                    <div class="kanban-col">
+                        <h4>REPLIED</h4>
+                    </div>
+                    <div class="kanban-col">
+                        <h4>48HR</h4>
+                    </div>
+                    <div class="kanban-col">
+                        <h4>CONVERTED</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Queue -->
+            <div class="section" id="queue">
+                <h2>📤 Outreach Queue</h2>
+                <div class="tabs">
+                    <div class="tab active">WhatsApp</div>
+                    <div class="tab">Email</div>
+                    <div class="tab">LinkedIn</div>
+                </div>
+                <div style="background:rgba(0,0,0,0.3); padding:1.5rem; border-radius:8px;">
+                    <p style="color:var(--gray)">Queue status: <span style="color:var(--accent)">100 messages pending generation</span></p>
+                    <ul style="margin-top:1rem; padding-left:1.5rem; line-height:2;">
+                        <li>TYPE A: 8 leads × 10 messages = 80</li>
+                        <li>TYPE B: 2 leads × 10 messages = 20</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Hidden Needs -->
+            <div class="section">
+                <h2>🔍 Hidden Needs Summary</h2>
+                <div class="needs-grid">
+                    <div class="need-tag">Social Media ×7</div>
+                    <div class="need-tag">POS ×1</div>
+                    <div class="need-tag">HR ×1</div>
+                </div>
+            </div>
+
+            <!-- Performance Chart -->
+            <div class="section">
+                <h2>📈 7-Day Performance</h2>
+                <div class="chart-container">
+                    <canvas id="perfChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password protection
+        const HASH = 'bd1b3c444ac6eebffa3d6903a59834c6b61cc390db7698f6039427a00e65492b';
+        
+        async function sha256(message) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        
+        async function checkPassword() {
+            const input = document.getElementById('password').value;
+            const hash = await sha256(input);
+            if (hash === HASH) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                initDashboard();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+        
+        // Update datetime
+        function updateDateTime() {
+            const now = new Date();
+            const hkTime = now.toLocaleString('zh-HK', {
+                timeZone: 'Asia/Hong_Kong',
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                hour12: false
+            });
+            document.getElementById('datetime').textContent = hkTime + ' HKT';
+        }
+        
+        // EMF Countdown
+        function updateCountdown() {
+            const deadline = new Date('2026-06-30T23:59:59+08:00');
+            const now = new Date();
+            const diff = deadline - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('emf-countdown').textContent = days + ' 日';
+        }
+        
+        // Chart
+        function initChart() {
+            const ctx = document.getElementById('perfChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Apr 2', 'Apr 3', 'Apr 4', 'Apr 5', 'Apr 6', 'Apr 7', 'Apr 8'],
+                    datasets: [{
+                        label: 'RAW Entries',
+                        data: [8, 10, 9, 12, 11, 10, 12],
+                        borderColor: '#FFD600',
+                        backgroundColor: 'rgba(255,214,0,0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'WIKI Created',
+                        data: [2, 3, 2, 4, 3, 4, 5],
+                        borderColor: '#00C853',
+                        backgroundColor: 'rgba(0,200,83,0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Leads Found',
+                        data: [5, 8, 7, 12, 10, 15, 19],
+                        borderColor: '#FF9100',
+                        backgroundColor: 'rgba(255,145,0,0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#fff' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#8B92A8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y: { ticks: { color: '#8B92A8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                    }
+                }
+            });
+        }
+        
+        function initDashboard() {
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            updateCountdown();
+            initChart();
+        }
+    </script>
+</body>
+</html>
