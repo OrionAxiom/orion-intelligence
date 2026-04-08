@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORION Intelligence Wiki | 香港商業情報</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #263238;
+            --primary: #1A237E;
+            --accent: #FFD600;
+            --white: #FFFFFF;
+            --gray: #90A4AE;
+            --success: #00C853;
+            --warning: #FF9100;
+            --danger: #FF1744;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--white);
+            line-height: 1.6;
+        }
+        .nav {
+            background: var(--primary); padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .nav-brand { font-size: 1.5rem; font-weight: 700; }
+        .nav-brand span { color: var(--accent); }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { color: var(--white); text-decoration: none; }
+        .nav-links a:hover { color: var(--accent); }
+        
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, #3949AB 100%);
+            padding: 4rem 2rem; text-align: center;
+        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .hero p { color: var(--gray); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        
+        .search-box {
+            background: rgba(255,255,255,0.05); padding: 1.5rem;
+            border-radius: 12px; margin-bottom: 2rem;
+        }
+        .search-box input {
+            width: 100%; padding: 1rem;
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; color: var(--white); font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .tabs {
+            display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;
+        }
+        .tab {
+            padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.05);
+            border-radius: 6px; cursor: pointer; border: 1px solid transparent;
+        }
+        .tab.active { background: var(--accent); color: var(--primary); font-weight: 600; }
+        .tab:hover:not(.active) { border-color: var(--accent); }
+        
+        .articles-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        .article-card {
+            background: rgba(255,255,255,0.03); border-radius: 12px;
+            padding: 1.5rem; border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s; cursor: pointer;
+        }
+        .article-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .article-card h3 { color: var(--accent); margin-bottom: 0.75rem; }
+        .article-card p { color: var(--gray); font-size: 0.9rem; margin-bottom: 1rem; }
+        .article-card .meta {
+            display: flex; gap: 1rem; font-size: 0.8rem; color: var(--gray);
+        }
+        .tag {
+            background: rgba(255,214,0,0.1); color: var(--accent);
+            padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem;
+        }
+        .tag.locked {
+            background: rgba(255,23,68,0.1); color: var(--danger);
+        }
+        
+        .cta-section {
+            background: linear-gradient(90deg, var(--primary) 0%, #3949AB 100%);
+            padding: 2rem; border-radius: 12px; margin-top: 3rem;
+            text-align: center;
+        }
+        .cta-section h3 { margin-bottom: 1rem; }
+        .cta-buttons {
+            display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 1rem 2rem; border-radius: 8px; text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .btn-primary {
+            background: var(--accent); color: var(--primary);
+        }
+        .btn-secondary {
+            background: transparent; color: var(--white);
+            border: 2px solid var(--white);
+        }
+        .btn:hover { opacity: 0.9; transform: scale(1.05); }
+        
+        footer {
+            text-align: center; padding: 2rem; color: var(--gray);
+            border-top: 1px solid rgba(255,255,255,0.05); margin-top: 3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.75rem; }
+            .nav-links { display: none; }
+            .articles-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-brand">🌌 ORION <span>Intelligence</span></div>
+        <div class="nav-links">
+            <a href="../index.html">Dashboard</a>
+            <a href="/public/index.html">Services</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>ORION Intelligence Wiki</h1>
+        <p>香港商業情報與數碼轉型知識庫。免費文章與獨家洞察，助你做出更明智的商業決策。</p>
+    </div>
+
+    <div class="container">
+        <div class="search-box">
+            <input type="text" placeholder="搜尋文章..." id="search">
+        </div>
+
+        <div class="tabs">
+            <div class="tab active">全部</div>
+            <div class="tab">F&B</div>
+            <div class="tab">政府資助</div>
+            <div class="tab">工具</div>
+            <div class="tab">AI</div>
+        </div>
+
+        <div class="articles-grid">
+            <div class="article-card">
+                <h3>2026 香港餐飲業五大後台痛點</h3>
+                <p>55%人手對賬 / HK$160K年均成本 / 60%請唔到會計 / 2,034間餐廳倒閉 / 18%增長</p>
+                <div class="meta">
+                    <span class="tag">免費</span>
+                    <span>F&B</span>
+                    <span>6分鐘閱讀</span>
+                </div>
+            </div>
+
+            <div class="article-card">
+                <h3>政府資助指南 BUD+EMF 2026</h3>
+                <p>BUD Fund Easy BUD HK$150K（滾動申請✅）/ EMF HK$100K（⚠️ June 30截止）/ TVP已關❌ / DTSPP已關❌</p>
+                <div class="meta">
+                    <span class="tag">免費</span>
+                    <span>政府資助</span>
+                    <span>8分鐘閱讀</span>
+                </div>
+            </div>
+
+            <div class="article-card">
+                <h3>支付平台對賬全攻略</h3>
+                <p>Octopus / AlipayHK / PayMe / 信用卡 — 多平台支付對賬的最佳實踐與自動化解決方案。</p>
+                <div class="meta">
+                    <span class="tag locked">🔒 Pro</span>
+                    <span>工具</span>
+                    <span>10分鐘閱讀</span>
+                </div>
+            </div>
+
+            <div class="article-card">
+                <h3>AI 幫商戶慳幾多</h3>
+                <p>實際案例分析：自動化如何幫助香港中小企節省時間與成本，提升競爭力。</p>
+                <div class="meta">
+                    <span class="tag locked">🔒 Pro</span>
+                    <span>AI</span>
+                    <span>12分鐘閱讀</span>
+                </div>
+            </div>
+
+            <div class="article-card">
+                <h3>HKPC 35.9/100 背後</h3>
+                <p>香港中小企數碼化指數深度解讀，與新加坡、台灣的比較，以及追趕策略。</p>
+                <div class="meta">
+                    <span class="tag locked">🔒 Pro</span>
+                    <span>研究</span>
+                    <span>15分鐘閱讀</span>
+                </div>
+            </div>
+
+            <div class="article-card">
+                <h3>免費 AI 策略顧問 — 3分鐘診斷你間舖頭嘅樽頸位</h3>
+                <p>你唔使請顧問。Copy 以下 prompt 入 ChatGPT / Kimi / Claude，填好你嘅資料，即刻得到三個專家角度嘅分析。</p>
+                <div class="meta">
+                    <span class="tag">TOOL</span>
+                    <span>工具</span>
+                    <span>免費</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Strategy Consultant CTA -->
+        <div class="section" style="margin-top: 3rem; background: rgba(255,255,255,0.03); padding: 2rem; border-radius: 12px;">
+            <h3 style="color: var(--accent); margin-bottom: 1rem;">🤖 免費 AI 策略顧問</h3>
+            <p style="color: var(--gray); margin-bottom: 1.5rem;">你唔使請顧問。Copy 以下 prompt 入 ChatGPT / Kimi / Claude，填好你嘅資料，即刻得到三個專家角度嘅分析。</p>
+            
+            <pre style="background: #1A237E; padding: 1.5rem; border-radius: 8px; overflow-x: auto; font-size: 0.85rem; line-height: 1.6;"><code>你係一個策略顧問團隊，用對話形式回答所有問題。
+
+## 我嘅情況
+- 我做咩：[你嘅行業同生意，例：旺角開咗 2 年嘅日式拉麵店，月均營業額 HK$180K]
+- 而家狀況：[收入、成本、人手，例：租金 HK$55K，請咗 6 個人，利潤率得 15%]
+- 目標客戶：[你想服務邊啲人，例：25-40歲返工族午餐客]
+- 最大樽頸位：[你覺得最痛嘅嘢，例：每月對賬要花 3 日，經常搵唔到差異]
+- 用緊嘅支付平台：[例：Octopus + AlipayHK + PayMe + 信用卡]
+- 每月花幾多時間做對賬/行政：[例：每月 20 小時]
+
+每次回答用以下三個角色對話。佢哋互相傾偈、互相挑戰、互相補充。
+
+**角色A —「阿明」— 營運效率專家**
+前麥肯錫顧問，做過 200+ 間 HK 中小企。永遠問「可以刪走咩？」。
+用數據講嘢。最討厭商戶花時間做機器可以做嘅嘢。
+口頭禪：「你每個月花幾多個鐘做呢樣嘢？乘以你嘅時薪，就係你嘅隱形成本。」
+
+**角色B —「Jennifer」— 銷售同定價專家**
+做過 HK 零售 15 年，幫過 50+ 間餐廳提升客單價。永遠計 ROI。
+最鍾意講「你個 offer 唔夠吸引」。會用 Hormozi 價值方程式分析每個決策。
+口頭禪：「唔好減價，加值。」
+
+**角色C —「KK」— 數碼化同科技專家**
+前 startup CTO，而家做 HK 中小企數碼化顧問。最心急嗰個，成日催你自動化。
+會用 HKPC 數碼化指數（35.9/100）同行業 benchmark 嚟比較你嘅情況。
+口頭禪：「2026 年仲用 Excel 對賬？」
+
+## 格式
+- 三個角色互相對話 4-6 個來回，直接叫對方名回應
+- 引用我提供嘅具體數字 — 真實營業額、真實成本
+- 直接、尖銳、唔講廢話
+
+## 結論
+- 3 個最重要建議
+- 行動步驟（編號、具體、有時限）
+- 追蹤指標
+- 風險
+- 唔好做嘅嘢
+
+## 決策原則
+- 慳到嘅時間 > 慳到嘅錢
+- 可以自動化 > 需要人手
+- 重複收入 > 一次性收入
+- 如果個流程未量化過，先量化再改善
+
+風格：直接、有觀點、行動導向。唔好模糊。
+語言：繁體中文（廣東話口語）</code></pre>
+
+            <div class="cta-section" style="margin-top: 2rem;">
+                <h3>📊 想要更深入嘅分析？</h3>
+                <p>ORION Intelligence 提供免費商戶數碼健康評分 — 5 個維度、100 分制。</p>
+                <div class="cta-buttons">
+                    <a href="https://wa.me/85291234567" class="btn btn-primary">👉 WhatsApp 查詢</a>
+                    <a href="mailto:tik@aicatalysthk.org?subject=訂閱ORION週報" class="btn btn-secondary">📧 訂閱週報</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final CTA -->
+        <div class="cta-section">
+            <h3>準備好數碼轉型？</h3>
+            <p style="color: var(--gray); margin-bottom: 1rem;">48小時內驗證你的數碼化假設，零風險開始。</p>
+            <div class="cta-buttons">
+                <a href="/public/index.html#catalystkeep" class="btn btn-primary">致一管家 — 商戶方案</a>
+                <a href="/public/index.html#orion-b2b" class="btn btn-secondary">ORION B2B — 企業方案</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>致一科技 · ORION Intelligence · tik@aicatalysthk.org</p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem;">© 2026 ORION Intelligence. All rights reserved.</p>
+    </footer>
+</body>
+</html>
